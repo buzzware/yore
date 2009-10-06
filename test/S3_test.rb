@@ -1,5 +1,5 @@
 require 'rubygems'
-gem 'buzzware-buzzcore'; require 'buzzcore';
+gem 'buzzcore'; require 'buzzcore';
 require 'yore/yore_core'
 require 'test/unit'
 gem 'Shoulda'; require 'shoulda'

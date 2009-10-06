@@ -4,14 +4,14 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "buzzware-yore"
+    gem.name = "yore"
     gem.summary = %Q{yore (as in "days of yore") is a user data management utility for web applications.}
     gem.description = %Q{yore (as in "days of yore") is a user data management utility for web applications.}
     gem.email = "contact@buzzware.com.au"
     gem.homepage = "http://github.com/buzzware/yore"
     gem.authors = ["buzzware"]
-    gem.rubyforge_project = "yore"
-    gem.add_dependency('buzzware-buzzcore', '>= 0.2.4')
+    gem.rubyforge_project = "buzzware"
+    gem.add_dependency('buzzcore', '>= 0.2.5')
     gem.add_development_dependency "thoughtbot-shoulda"
 		#gem.files.include %w(
 		#	lib/buzzcore.rb

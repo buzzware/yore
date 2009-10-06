@@ -1,5 +1,5 @@
 require 'rubygems'
-gem 'buzzware-buzzcore'; require 'buzzcore';
+gem 'buzzcore'; require 'buzzcore';
 
 #gem 'RequirePaths'; require 'require_paths'
 #require_paths '../../..','../lib'

@@ -3,7 +3,7 @@
 require 'fileutils'
 
 require 'rubygems'
-gem 'buzzware-buzzcore'; require 'buzzcore';
+gem 'buzzcore'; require 'buzzcore';
 gem 'cmdparse'; require 'cmdparse'
 
 require 'yore/yore_core'
