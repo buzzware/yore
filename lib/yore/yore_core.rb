@@ -533,7 +533,8 @@ module YoreCore
 
 		def save(aArgs)
 			fnArchive = aArgs.is_a?(Array) ? aArgs.first : aArgs	#only supported argument
-			save_internal(fnArchive)
+			config[:out_file] = File.expand_path(fnArchive || 'save.tgz',config[:basepath])
+			save_internal(config[:out_file])
 		end
 
     def backup(aArgs)	# was aJobFiles

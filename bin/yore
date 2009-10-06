@@ -6,6 +6,7 @@ require 'rubygems'
 gem 'buzzcore'; require 'buzzcore';
 gem 'cmdparse'; require 'cmdparse'
 
+require_paths_first '../lib'
 require 'yore/yore_core'
 
 CMD_OPTIONS = {}  # options given on command line
@@ -28,7 +29,7 @@ end
 
 cmd = CmdParse::CommandParser.new( true )
 cmd.program_name = "yore"
-cmd.program_version = [0, 0, 4]
+cmd.program_version = [0, 0, 6]
 # Options are given after a command and before arguments on the command line
 # so global options are given first, before the first command
 # ie ruby yore.rb --global_option command --command_option argument1 argument2 argumentn
@@ -37,7 +38,7 @@ cmd.options = CmdParse::OptionParserWrapper.new do |opt|
   opt.on("--verbose", "Be verbose when outputting info") do |t|
     CMD_OPTIONS[:verbose] = t
   end
-  opt.on("--config", "Configuration XML File") do |t|
+  opt.on("-c", "--config CONFIG_FILE", "Configuration XML File") do |t|
     CMD_OPTIONS[:config] = t
   end
 end
@@ -48,9 +49,9 @@ yore = YoreCore::Yore.new      # main program object
 
 # these options must be given after backup and before arguments
 option_parser = CmdParse::OptionParserWrapper.new do |opt|
-  opt.on( '--all', 'Delete all IP addresses' ) do
-    CMD_OPTIONS[:deleteAll] = true
-  end
+  #opt.on( '--all', 'Delete all IP addresses' ) do
+  #  CMD_OPTIONS[:deleteAll] = true
+  #end
 end
 
 load_save_option_parser = CmdParse::OptionParserWrapper.new do |opt|
