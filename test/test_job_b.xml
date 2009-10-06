@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Yore>
+  <SimpleItems>
+		<Item Name="keep_daily">14</Item>
+		<Item Name="keep_weekly">12</Item>
+		<Item Name="keep_monthly">12</Item>
+		<Item Name="crypto_iv">56FD29B5CE3F291B0925577435EBEE7E</Item>
+		<Item Name="crypto_key">07692FC3456A345055B45A37560A85390A3565A0436E035E35636A603A5A2FE</Item>
+		<Item Name="bucket">yoretest</Item>
+		<Item Name="first_hour">4</Item>
+		<Item Name="prefix">yoretest</Item>
+		<Item Name="log_level">INFO</Item>
+		<Item Name="email_report">false</Item>
+
+		<Item Name="mail_host">mail.com</Item>
+		<Item Name="mail_port">25</Item>
+		<Item Name="mail_helodomain">blah.com</Item>
+		<Item Name="mail_user">erewrwer</Item>
+		<Item Name="mail_password">werewrewr</Item>
+		<Item Name="mail_from">noreply@buzzware.com.au</Item>
+		<Item Name="mail_from_alias">Web Server</Item>
+		<Item Name="mail_to">sadsd@blah.com</Item>
+		<Item Name="mail_to_alias">sdsadsd</Item>
+		<Item Name="mail_auth">login</Item>
+		<Item Name="mysqldump">/usr/local/mysql/bin/mysqldump</Item>
+		
+		</SimpleItems>
+	<Sources>
+		<Source Type="File">
+			<IncludePath>/tmp/yoretest</IncludePath>
+		</Source>
+  </Sources>
+</Yore>
+

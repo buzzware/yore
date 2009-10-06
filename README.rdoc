@@ -1,0 +1,86 @@
+= yore
+
+* RubyForge Project : http://rubyforge.org/projects/buzzware
+* Author : http://www.buzzware.com.au
+
+== DESCRIPTION:
+
+yore (as in "days of yore") is a data management utility for web applications.
+It provides hands-off scheduled backup functions, combines file and database 
+data into a single file, knows certain applications, particularly Rails related ones,
+and can use Amazon S3 for storage.
+
+== FEATURES/PROBLEMS:
+
+* Compressed, encrypted, single file backups of folders and mysql databases
+* Can be called regularly eg. by cron
+* Backups can be uploaded to Amazon S3
+* will later remove old files that don't match the configurable scheme for backup history,
+but keeping a useful history eg. 
+- backup every day
+- keep 2 weeks of daily backups
+- keep 12 weeks of friday backups
+- keep the first friday backup of each month forever
+* Can automatically collect and compress database all user data from particular applications
+to a single file, and restore to another server. Known applications are Rails-centric but others
+can be manually configured. 
+* Rails database credentials are read from database.yml
+
+Amazon S3
+
+* Yore relies on s3cmd for S3 access which is contained in the s3sync gem.  
+s3cmd must be configured with keys for a registered Amazon S3 account.  
+Use something like "s3cmd listbuckets" to check that you have that setup 
+correctly before launching yore.  
+
+* You can and probably should create a seperate Amazon account for 1 or more web servers, 
+and then grant write access to a single bucket for their use, rather than using your main
+S3 keys. You don't need to supply your credit card details for this account - your main 
+account will be charged. This avoids your main Amazon AWS keys getting stolen by someone 
+hacking into the webserver, or even other legitimate users using them.
+
+== SYNOPSIS:
+
+yore [global options] command [command options] [arguments]
+eg.
+* yore backup yore_config.xml
+* cd my_rails_app; yore save --kind=spree data.tgz
+
+== REQUIREMENTS:
+
+* s3sync (http://rubyforge.org/projects/s3sync/)
+* RequirePaths (http://rubyforge.org/projects/blackwhitelogin)
+* cmdparse (http://cmdparse.rubyforge.org)
+* shairontoledo-popen4 (http://github.com/shairontoledo/popen4)
+* tar, bzip2, openssl, mysql
+* tested on MacOS and Linux
+
+== INSTALL:
+
+ sudo gem sources -a http://gems.github.com
+ sudo gem install yore
+
+== LICENSE:
+
+(The MIT License)
+
+Copyright (c) 2009 Gary McGhee, Buzzware Solutions
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+'Software'), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.

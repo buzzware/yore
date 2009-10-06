@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Yore>
+    <SimpleItems>
+        <Item Name="keep_daily">14</Item>
+        <Item Name="keep_weekly">12</Item>
+        <Item Name="keep_monthly">12</Item>
+        <Item Name="crypto_iv">3A63775C1E3F291B0925578165EB917E</Item>
+        <Item Name="crypto_key">07692FC8656F04AE5518B80D38681E038A3C12050DF6CC97CEEC33D800D5E2FE</Item>
+        <Item Name="first_hour">4</Item>
+        <Item Name="prefix">backup</Item>
+        <Item Name="log_level">INFO</Item>
+    </SimpleItems>
+	<Sources>
+        <Source>
+            <IncludePath>test_source</IncludePath>
+            <!-- <ExcludePath></ExcludePath> -->
+        </Source>
+    </Sources>
+</Yore>

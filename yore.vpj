@@ -1,0 +1,120 @@
+<!DOCTYPE Project SYSTEM "http://www.slickedit.com/dtd/vse/10.0/vpj.dtd">
+<Project
+	Version="10.0"
+	VendorName="SlickEdit"
+	WorkingDir=".">
+	<Config
+		Name="Release"
+		OutputFile=""
+		CompilerConfigName="Latest Version">
+		<Menu>
+			<Target
+				Name="Compile"
+				MenuCaption="&amp;Compile"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveCurrent"
+				RunFromDir="%rw">
+				<Exec/>
+			</Target>
+			<Target
+				Name="Build"
+				MenuCaption="&amp;Build"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveWorkspaceFiles"
+				RunFromDir="%rw">
+				<Exec/>
+			</Target>
+			<Target
+				Name="Rebuild"
+				MenuCaption="&amp;Rebuild"
+				CaptureOutputWith="ProcessBuffer"
+				SaveOption="SaveWorkspaceFiles"
+				RunFromDir="%rw">
+				<Exec/>
+			</Target>
+			<Target
+				Name="Debug"
+				MenuCaption="&amp;Debug"
+				SaveOption="SaveNone"
+				RunFromDir="%rw">
+				<Exec/>
+			</Target>
+			<Target
+				Name="Execute"
+				MenuCaption="E&amp;xecute"
+				SaveOption="SaveNone"
+				RunFromDir="%rw"
+				CaptureOutputWith="ProcessBuffer"
+				ClearProcessBuffer="1">
+				<Exec CmdLine="source actions.sh execute"/>
+			</Target>
+		</Menu>
+	</Config>
+	<CustomFolders>
+		<Folder
+			Name="Source Files"
+			Filters="*.c;*.C;*.cc;*.cpp;*.cp;*.cxx;*.c++;*.prg;*.pas;*.dpr;*.asm;*.s;*.bas;*.java;*.cs;*.sc;*.e;*.cob;*.html;*.rc;*.tcl;*.py;*.pl"/>
+		<Folder
+			Name="Header Files"
+			Filters="*.h;*.H;*.hh;*.hpp;*.hxx;*.inc;*.sh;*.cpy;*.if"/>
+		<Folder
+			Name="Resource Files"
+			Filters="*.ico;*.cur;*.dlg"/>
+		<Folder
+			Name="Bitmaps"
+			Filters="*.bmp"/>
+		<Folder
+			Name="Other Files"
+			Filters="">
+		</Folder>
+	</CustomFolders>
+	<Files AutoFolders="DirectoryView">
+		<Folder Name="bin">
+			<F N="bin/yore"/>
+		</Folder>
+		<Folder Name="lib">
+			<Folder Name="yore">
+				<F
+					N="lib/yore/*.rb"
+					Recurse="0"
+					Refilter="0"
+					Excludes=".svn/"/>
+			</Folder>
+		</Folder>
+		<Folder Name="../../projects_2008">
+			<Folder Name="FIN">
+				<F N="../../projects_2008/FIN/finwa_yore.xml"/>
+			</Folder>
+		</Folder>
+		<Folder Name="/System">
+			<Folder Name="Library">
+				<Folder Name="Frameworks">
+					<Folder Name="Ruby.framework">
+						<Folder Name="Versions">
+							<Folder Name="1.8">
+								<Folder Name="usr">
+									<Folder Name="lib">
+										<Folder Name="ruby">
+											<Folder Name="1.8">
+												<F N="/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/lib/ruby/1.8/logger.rb"/>
+											</Folder>
+										</Folder>
+									</Folder>
+								</Folder>
+							</Folder>
+						</Folder>
+					</Folder>
+				</Folder>
+			</Folder>
+		</Folder>
+		<Folder Name="test">
+			<F
+				N="test/*"
+				Recurse="0"
+				Refilter="0"
+				Excludes=".svn/"/>
+		</Folder>
+		<F N="actions.sh"/>
+		<F N="sanity_test.rb"/>
+	</Files>
+</Project>

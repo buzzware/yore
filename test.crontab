@@ -1,0 +1,5 @@
+#minute hour 	mday 	month 	wday 	command
+#15	03	1	*	*	sh /Users/{login name}/sample1.sh	# 3:15am on first day of the month
+#15	03	*	*	6	sh /Users/{login name}/sample2.sh	# 3:15am every day
+*/1	*	*	*	*	/Users/gary/repos/Buzzware/projects_2009/yore/bin/yore backup /tmp/yoretest/test.xml	# every 15 minutes
+	

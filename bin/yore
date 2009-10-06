@@ -1,0 +1,79 @@
+#!/usr/bin/env ruby
+
+require 'fileutils'
+
+require 'rubygems'
+gem 'buzzware-buzzcore'; require 'buzzcore';
+gem 'cmdparse'; require 'cmdparse'
+
+require 'yore/yore_core'
+
+CMD_OPTIONS = {}  # options given on command line
+
+# this contains a block that actually creates the controller, yore
+def command(aParser,aController,aAction,aShortDescription=nil,aOptionParser=nil,aOther={})
+  c = CmdParse::Command.new( aAction.to_s, false )
+	c.short_desc = aShortDescription
+	c.description = aOther[:description] if aOther[:description]
+	c.options = aOptionParser if aOptionParser
+  c.set_execution_block do |args|
+		CMD_OPTIONS[:config] = args.first if aAction == :backup
+		CMD_OPTIONS[:config] = 'yore.config.xml' if !CMD_OPTIONS[:config] && File.exists?('yore.config.xml')
+		aController.configure(CMD_OPTIONS[:config],CMD_OPTIONS) unless CMD_OPTIONS.empty?
+
+		aController.do_action(aAction,args)
+  end
+  aParser.add_command(c)
+end
+
+cmd = CmdParse::CommandParser.new( true )
+cmd.program_name = "yore"
+cmd.program_version = [0, 0, 4]
+# Options are given after a command and before arguments on the command line
+# so global options are given first, before the first command
+# ie ruby yore.rb --global_option command --command_option argument1 argument2 argumentn
+cmd.options = CmdParse::OptionParserWrapper.new do |opt|
+  opt.separator "Global options:"
+  opt.on("--verbose", "Be verbose when outputting info") do |t|
+    CMD_OPTIONS[:verbose] = t
+  end
+  opt.on("--config", "Configuration XML File") do |t|
+    CMD_OPTIONS[:config] = t
+  end
+end
+cmd.add_command( CmdParse::HelpCommand.new )
+cmd.add_command( CmdParse::VersionCommand.new )
+
+yore = YoreCore::Yore.new      # main program object
+
+# these options must be given after backup and before arguments
+option_parser = CmdParse::OptionParserWrapper.new do |opt|
+  opt.on( '--all', 'Delete all IP addresses' ) do
+    CMD_OPTIONS[:deleteAll] = true
+  end
+end
+
+load_save_option_parser = CmdParse::OptionParserWrapper.new do |opt|
+  opt.on( '--kind=rails|spree', String, 'Specify application to configure for' ) do |value|
+    CMD_OPTIONS[:kind] = value
+  end
+  opt.on( '--RAILS_ENV=development|test|production', String, 'Specify Rails environment to use database credentials for' ) do |value|
+    CMD_OPTIONS[:RAILS_ENV] = value
+  end
+end
+
+command(cmd,yore,:backup,"Backup filelist to S3",option_parser)
+
+command(cmd,yore,:save,"Save application data to local file",load_save_option_parser)
+
+command(cmd,yore,:load,"Load application data from local file",load_save_option_parser)
+
+command(cmd,yore,:test_email,"Test email sending\n")
+
+command(cmd,yore,:db_dump,"Dump database by name in job\n")
+
+cmd.parse
+
+yore.logger.info "\nComplete.\n"
+yore.report
+

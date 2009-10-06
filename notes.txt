@@ -1,0 +1,27 @@
+
+debug,info,warning,error
+
+* log warning and above to STDERR
+* report used with all detail levels, all sent to log ?
+* log warning and above sent to report
+
+Perhaps :
+* one logger. 
+* Report includes info+
+* STDERR includes warning+
+
+Write log splitter that looks like a logger, and is created with an array of other loggers.
+All log actions are replicated on the array of loggers
+
+loggers :
+ConsoleLogger: (debug-info to STDOUT,warning+ to STDERR) (no timestamp)
+ReportLogger: (info+ to report file) standard logger class (minimised timestamp)
+SystemLogger: all levels to /var/log (rolling file) SysLogLogger ? (standard timestamp)
+
+
+* only 2 files
+* 
+
+*** Use this for parsing PHP configs
+http://github.com/mattfawcett/ruby-reads-php/tree/master
+
