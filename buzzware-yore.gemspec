@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "bin/yore",
+     "buzzware-yore.gemspec",
      "lib/yore/yore_core.rb",
      "notes.txt",
      "test.crontab",
