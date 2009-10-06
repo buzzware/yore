@@ -6,7 +6,6 @@ require 'rubygems'
 gem 'buzzcore'; require 'buzzcore';
 gem 'cmdparse'; require 'cmdparse'
 
-require_paths_first '../lib'
 require 'yore/yore_core'
 
 CMD_OPTIONS = {}  # options given on command line
