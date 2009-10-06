@@ -4,7 +4,7 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "yore"
+    gem.name = "buzzware-yore"
     gem.summary = %Q{yore (as in "days of yore") is a user data management utility for web applications.}
     gem.description = %Q{yore (as in "days of yore") is a user data management utility for web applications.}
     gem.email = "contact@buzzware.com.au"

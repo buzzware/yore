@@ -4,7 +4,7 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{yore}
+  s.name = %q{buzzware-yore}
   s.version = "0.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -17,6 +17,27 @@ Gem::Specification.new do |s|
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
+  ]
+  s.files = [
+    ".document",
+     ".gitignore",
+     "LICENSE",
+     "README.rdoc",
+     "Rakefile",
+     "VERSION",
+     "bin/yore",
+     "lib/yore/yore_core.rb",
+     "notes.txt",
+     "test.crontab",
+     "test/S3_test.rb",
+     "test/test_helper.rb",
+     "test/test_job_a.xml",
+     "test/test_job_b.xml",
+     "test/yore_browsercms_loadsave_test.rb",
+     "test/yore_spree_loadsave_test.rb",
+     "test/yore_test.rb",
+     "yore.vpj",
+     "yore.vpw"
   ]
   s.has_rdoc = true
   s.homepage = %q{http://github.com/buzzware/yore}
