@@ -28,7 +28,7 @@ end
 
 cmd = CmdParse::CommandParser.new( true )
 cmd.program_name = "yore"
-cmd.program_version = [0, 0, 8]
+cmd.program_version = [0, 0, 9]
 # Options are given after a command and before arguments on the command line
 # so global options are given first, before the first command
 # ie ruby yore.rb --global_option command --command_option argument1 argument2 argumentn
