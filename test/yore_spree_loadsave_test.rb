@@ -1,9 +1,6 @@
 require 'rubygems'
 gem 'buzzcore'; require 'buzzcore';
 
-#gem 'RequirePaths'; require 'require_paths'
-#require_paths '../../..','../lib'
-
 require 'yore/yore_core'
 require 'test/unit'
 gem 'Shoulda'; require 'shoulda'

@@ -125,6 +125,10 @@ module YoreCore
 		
 		#aOptions may require {:basepath => File.dirname(File.expand_path(job))}
 		def self.launch(aConfigXml,aCmdOptions=nil,aOptions=nil)
+			if !aConfigXml
+				path = MiscUtils.path_combine(aOptions && aOptions[:basepath],'yore.config.xml')
+				aConfigXml = path if File.exists?(path)				
+			end
 			result = Yore.new()
 			result.configure(aConfigXml,aCmdOptions,aOptions)
 			return result
@@ -336,6 +340,7 @@ module YoreCore
     end
 
     def uncompress(aArchive,aDestination=nil,aArchiveContent=nil)			
+			logger.info "uncompressing #{aArchive}"
       #tarfile = File.expand_path(MiscUtils.file_change_ext(File.basename(aArchive),'tar'),temp_dir)
       #shell("bunzip2 #{tarfile}; mv #{tarfile}.bz2 #{aDestFile}")
       #
@@ -465,7 +470,9 @@ module YoreCore
 							REXML::XPath.each(xmlSource, 'IncludePath') do |xmlPath|
 								bp2 = MiscUtils.path_combine(bp,XmlUtils::peek_node_value(xmlPath,"@BasePath"))
 								filelist << '-C'+bp2
-								files = MiscUtils::recursive_file_list(MiscUtils::path_combine(bp2,xmlPath.text))
+								destPath = MiscUtils::path_combine(bp2,xmlPath.text)
+								logger.info "saving files from #{destPath}"
+								files = MiscUtils::recursive_file_list(destPath)
 								files.map!{|f| MiscUtils.path_debase(f,bp2)}
 								filelist += files
 								sourceFound = true
@@ -483,6 +490,7 @@ module YoreCore
 								unless args[:username] && args[:password] && args[:database] && (file||arc_file)
 									raise StandardError.new("Invalid or missing parameter")
 								end
+								logger.info "saving database #{args[:database]}"
 								if arc_file
 									arc_file = MiscUtils.path_debase(arc_file,'/')
 									sql_file = File.expand_path(arc_file,aTempFolder)
@@ -570,6 +578,7 @@ module YoreCore
 							pathUncompressed = File.join(archive_path,pathArchive)
 							pathTmp = File.join(rails_tmp_path,pathArchive)
 							pathDest = File.join(bpInclude,pathArchive)
+							logger.info "loading files into #{pathDest}"
 
 							# move basepath/relativepath to tmp/yore/090807-010203/relativepath (out of the way)
 							Yore::move_folder(pathDest,pathTmp) if File.exists?(pathDest)
@@ -578,6 +587,7 @@ module YoreCore
 						end
 					when 'MySql' then
 						db_details = database_from_xml(XmlUtils.single_node(xmlSource,'Database'))
+						logger.info "loading database #{db_details[:database]}"
 						DatabaseUtils.load_database(db_details,File.join(archive_path,db_details[:archive_file]))
 				end
 			end						
