@@ -6,6 +6,7 @@ require 'rubygems'
 gem 'buzzcore'; require 'buzzcore';
 gem 'cmdparse'; require 'cmdparse'
 
+require_paths_first '../lib'
 require 'yore/yore_core'
 
 CMD_OPTIONS = {}  # options given on command line
@@ -62,11 +63,21 @@ load_save_option_parser = CmdParse::OptionParserWrapper.new do |opt|
   end
 end
 
+encrypt_decrypt_option_parser = CmdParse::OptionParserWrapper.new do |opt|
+  #opt.on( '--all', 'Delete all IP addresses' ) do
+  #  CMD_OPTIONS[:deleteAll] = true
+  #end
+end
+
 command(cmd,yore,:backup,"Backup filelist to S3",option_parser)
 
 command(cmd,yore,:save,"Save application data to local file",load_save_option_parser)
 
 command(cmd,yore,:load,"Load application data from local file",load_save_option_parser)
+
+command(cmd,yore,:decrypt,"Expand archive file",encrypt_decrypt_option_parser)
+
+#command(cmd,yore,:encrypt,"Create archive file",encrypt_decrypt_option_parser)
 
 command(cmd,yore,:test_email,"Test email sending\n")
 

@@ -593,6 +593,26 @@ module YoreCore
 			end						
 		end		
 		
+		#def encrypt(aArgs)
+		#	archive	= aArgs.delete(0)
+		#	paths = aArgs
+		#	# filelist from paths
+    #  compress(filelist,aFilename)
+		#end
+		
+		# needs :crypto_key, :crypto_iv
+		# args :
+		#		archive : source file to decrypt
+		#		folder : destination folder to decrypt to
+		def decrypt(aArgs)
+			archive	= aArgs[0]
+			folder = MiscUtils.file_no_extension(archive) unless folder = aArgs[1]
+			folder = File.expand_path(folder,config[:basepath])
+      temp_file = File.expand_path('file.tar',temp_path)
+			unpack(archive,temp_file)
+			uncompress(temp_file,folder)
+		end
+		
 		def test_email(*aDb)
 			args = {
         :host => config[:mail_host],
