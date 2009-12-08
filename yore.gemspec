@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{yore}
-  s.version = "0.0.11"
+  s.version = "0.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["buzzware"]
-  s.date = %q{2009-10-17}
+  s.date = %q{2009-12-08}
   s.default_executable = %q{yore}
   s.description = %q{yore (as in "days of yore") is a user data management utility for web applications.}
   s.email = %q{contact@buzzware.com.au}
@@ -26,13 +26,16 @@ Gem::Specification.new do |s|
      "Rakefile",
      "VERSION",
      "bin/yore",
+     "lib/yore/AWSS3Client.rb",
      "lib/yore/yore_core.rb",
      "notes.txt",
      "test.crontab",
+     "test/AWS_gem_test.rb",
      "test/S3_test.rb",
      "test/test_helper.rb",
      "test/test_job_a.xml",
      "test/test_job_b.xml",
+     "test/upload_test_content.yor",
      "test/yore_browsercms_loadsave_test.rb",
      "test/yore_spree_loadsave_test.rb",
      "test/yore_test.rb",
@@ -47,7 +50,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{yore (as in "days of yore") is a user data management utility for web applications.}
   s.test_files = [
-    "test/S3_test.rb",
+    "test/AWS_gem_test.rb",
+     "test/S3_test.rb",
      "test/test_helper.rb",
      "test/yore_browsercms_loadsave_test.rb",
      "test/yore_spree_loadsave_test.rb",
