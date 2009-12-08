@@ -40,13 +40,13 @@ to get an "Access Key ID" and click Show to get its "Secret Access Key"
 
 * Create a bucket with backup permissions for an AWS account
 
-yore new_backup_bucket --backup_email "blah@buzzware.com.au" testbucket
+yore new_backup_bucket --backup_email "blah@buzzware.com.au" --bucket testbucket
 
 == SYNOPSIS:
 
 yore [global options] command [command options] [arguments]
 eg.
-* yore backup yore_config.xml
+* yore backup yore.config.xml
 * cd my_rails_app; yore save --kind=spree data.tgz
 
 == REQUIREMENTS:

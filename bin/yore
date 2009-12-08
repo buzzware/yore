@@ -70,6 +70,9 @@ encrypt_decrypt_option_parser = CmdParse::OptionParserWrapper.new do |opt|
 end
 
 new_backup_bucket_option_parser = CmdParse::OptionParserWrapper.new do |opt|
+  opt.on( '--bucket=Bucket Name', String, 'Name of bucket' ) do |value|
+    CMD_OPTIONS[:bucket] = value
+  end
   opt.on( '--backup_id=S3 Access Key ID', String, 'S3 Access Key ID from Amazon' ) do |value|
     CMD_OPTIONS[:backup_id] = value
   end
@@ -85,6 +88,8 @@ command(cmd,yore,:save,"Save application data to local file",load_save_option_pa
 command(cmd,yore,:load,"Load application data from local file",load_save_option_parser)
 
 command(cmd,yore,:decrypt,"Expand archive file",encrypt_decrypt_option_parser)
+
+command(cmd,yore,:retrieve,"download and decrypt file",encrypt_decrypt_option_parser)
 
 #command(cmd,yore,:encrypt,"Create archive file",encrypt_decrypt_option_parser)
 

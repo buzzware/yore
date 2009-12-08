@@ -264,6 +264,7 @@ module YoreCore
       @keepers << KeepMonthly.new(config[:keep_monthly])
 			
 			@s3client = ::AWSS3Client.new()
+			logger.info "Using S3 key #{@s3client.credentials[:s3_access_key_id]}"
     end
 		
 		def do_action(aAction,aArgs)
@@ -617,8 +618,13 @@ module YoreCore
 			uncompress(temp_file,folder)
 		end
 		
+		def retrieve(aArgs)
+			download(aArgs[0])
+			decrypt(aArgs)
+		end
+		
 		def new_backup_bucket(aArgs)
-			bucket_name = aArgs[0]
+			bucket_name = config[:bucket]
 			if s3client.bucket_exists?(bucket_name)
 				puts "sorry, bucket already exists"
 			else

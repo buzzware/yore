@@ -11,6 +11,7 @@ begin
     gem.homepage = "http://github.com/buzzware/yore"
     gem.authors = ["buzzware"]
     gem.rubyforge_project = "buzzware"
+    gem.add_dependency('cmdparse', '>= 2.0.2')
     gem.add_dependency('buzzcore', '>= 0.2.6')
     gem.add_dependency('aws-s3', '>= 0.6.2')
     gem.add_development_dependency "thoughtbot-shoulda"
