@@ -1,16 +1,11 @@
-require 'rubygems'
-gem 'buzzcore'; require 'buzzcore';
-require 'yore/yore_core'
-require 'test/unit'
-gem 'Shoulda'; require 'shoulda'
-require 'fileutils'
+require File.expand_path('test_helper',File.dirname(__FILE__))
 
 def ensure_clean_bucket(aName)
   `s3cmd createbucket #{aName}`
   `s3cmd deleteall #{aName}`
 end
 
-# finwa example : yore backup /var/www/joomla/deploy-system/finwa_yore.xml >/dev/null 2>&1
+# example : yore backup /var/www/joomla/deploy-system/yore.xml >/dev/null 2>&1
 
 class S3Test < Test::Unit::TestCase
 
@@ -24,15 +19,17 @@ class S3Test < Test::Unit::TestCase
 		@yore.configure({
 			:bucket => bucket
 		})
-		content = 'this is my test content'
+		#content = 'this is my test content'
+		orig_file = File.expand_path('upload_test_content.yor',File.dirname(__FILE__))  # MiscUtils.make_temp_file(nil, temp_dir, content)
+		puts @yore.upload(orig_file)
+		#orig_file = temp_file+'.orig'
+		#File.rename(temp_file, orig_file)
 		temp_dir = MiscUtils.make_temp_dir()
-		temp_file = MiscUtils.make_temp_file(nil, temp_dir, content)
-		puts @yore.upload(temp_file)
-		orig_file = temp_file+'.orig'
-		File.rename(temp_file, orig_file)
+		temp_file = File.join(temp_dir,File.basename(orig_file))
 		puts @yore.download(temp_file)
-		down_file_content = MiscUtils.string_from_file(temp_file)
-		assert_equal content, down_file_content
+		#down_file_content = MiscUtils.string_from_file(temp_file)
+		#assert_equal content, down_file_content
+		assert_equal nil, POpen4::shell_out("/usr/bin/diff #{orig_file} #{temp_file}")[:stdout]
 	end
 
 	should "backup and restore multiple directories of file" do
@@ -56,7 +53,6 @@ class S3Test < Test::Unit::TestCase
 			MiscUtils::make_temp_file(f,source2)
 		end
 
-
 		ensure_clean_bucket(bucket)
 
 		# create job file
@@ -67,7 +63,7 @@ class S3Test < Test::Unit::TestCase
 						<Item Name="crypto_iv">3A63775C1E3F291B0925578165EB917E</Item>
 						<Item Name="crypto_key">07692FC8656F04AE5518B80D38681E038A3C12050DF6CC97CEEC33D800D5E2FE</Item>
 						<Item Name="prefix">backup</Item>
-						<Item Name="log_level">INFO</Item>
+						<Item Name="log_level">DEBUG</Item>
 						<Item Name="bucket">${BUCKET}</Item>
 				</SimpleItems>
 			<Sources>
@@ -85,11 +81,10 @@ class S3Test < Test::Unit::TestCase
 		})
 		MiscUtils::string_to_file(job_content,job_file = MiscUtils::temp_file)
 
-		# call yore script with ruby from the command line, then download result and check contents
 		begin
 			_xmlRoot = XmlUtils.get_xml_root(job_content)
 			cmd_options = {:config => job_file}
-			@yore_upload = YoreCore::Yore::launch(_xmlRoot,cmd_options,{:basepath => File.dirname(File.expand_path(job_file))})
+			@yore_upload = YoreCore::Yore::launch(_xmlRoot,cmd_options,{:basepath => File.dirname(File.expand_path(job_file)), :log_level => 'DEBUG'})
 			@yore_upload.backup([job_file])
 		rescue ::StandardError => e
 			flunk e.inspect
@@ -98,7 +93,10 @@ class S3Test < Test::Unit::TestCase
 		#puts result
 		yore = YoreCore::Yore.new()
 		yore.configure({
-			:bucket => bucket
+			:crypto_iv => "3A63775C1E3F291B0925578165EB917E",
+			:crypto_key =>"07692FC8656F04AE5518B80D38681E038A3C12050DF6CC97CEEC33D800D5E2FE",
+			:bucket => bucket,
+			:log_level => 'DEBUG'
 		})
 
 		retrieved_fname = File.expand_path(yore.encode_file_name(), dest_dir)

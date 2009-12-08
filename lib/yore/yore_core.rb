@@ -4,6 +4,9 @@ gem 'buzzcore'; require 'buzzcore';
 require 'fileutils'
 require 'net/smtp'
 
+require 'yore/AWSS3Client'
+
+
 THIS_FILE = File.expand_path(__FILE__)
 THIS_DIR = File.dirname(THIS_FILE)
 
@@ -70,8 +73,10 @@ module YoreCore
   class Yore
 
     DEFAULT_CONFIG = {
-			:kind => '',
-			:basepath => '',
+			:kind => String,
+			:basepath => String,
+			:backup_id => String,
+			:backup_email => String,
       :keep_daily => 14,
       :keep_weekly => 12,
       :keep_monthly => 12,
@@ -80,26 +85,27 @@ module YoreCore
       :first_hour => 4,
       :prefix => 'backup',
       :log_level => 'INFO',
-      :bucket => '',
+      :bucket => String,
 			:email_report => false,
-      :mail_host => '',
+      :mail_host => String,
       :mail_port => 25,
-      :mail_helodomain => '',
-      :mail_user => '',
-      :mail_password => '',
-			:mail_from => '',
-			:mail_from_alias => '',
-			:mail_to => '',
-			:mail_to_alias => '',
+      :mail_helodomain => String,
+      :mail_user => String,
+      :mail_password => String,
+			:mail_from => String,
+			:mail_from_alias => String,
+			:mail_to => String,
+			:mail_to_alias => String,
 			:mail_auth => :plain,
 			:mysqldump => 'mysqldump',
-			:RAILS_ENV => ''
+			:RAILS_ENV => String
 		}
 
     attr_reader :config
     attr_reader :logger
     attr_reader :reporter
     attr_reader :keepers
+    attr_reader :s3client
 
     def initialize(aConfig=nil)
       DEFAULT_CONFIG[:email_report] = false  # fixes some bug where this was nil
@@ -256,6 +262,8 @@ module YoreCore
       @keepers << KeepDaily.new(config[:keep_daily])
       @keepers << KeepWeekly.new(config[:keep_weekly])
       @keepers << KeepMonthly.new(config[:keep_monthly])
+			
+			@s3client = ::AWSS3Client.new()
     end
 		
 		def do_action(aAction,aArgs)
@@ -275,12 +283,6 @@ module YoreCore
       return result[:stdout]
 		end
 		
-		def s3shell(aCommandline)
-			shell(aCommandline) do |r|
-				r[:exitcode] = 1 if r[:stderr].length > 0
-			end
-		end
-
     def get_log
       logger.close
       # read in log and return
@@ -364,22 +366,24 @@ module YoreCore
        shell "openssl enc -d -aes-256-cbc -K #{config[:crypto_key]} -iv #{config[:crypto_iv]} -in #{aFileIn} -out #{aFileOut}"
     end
 
-    def ensure_bucket(aBucket=nil)
+    def ensure_bucket(aBucket=nil,aUserEmail=nil)
       aBucket ||= config[:bucket]
+      aUserEmail ||= config[:bucket_user_email]
 			logger.info "Ensuring S3 bucket #{aBucket} exists ..."
-      s3shell "s3cmd createbucket #{aBucket}"
+			s3client.ensure_backup_bucket(aBucket,aUserEmail ? {'email_address' => aUserEmail} : nil)
     end
 
     # uploads the given file to the current bucket as its basename
     def upload(aFile)
       #ensure_bucket()
+			logger.debug "Uploading #{aFile} to S3 bucket #{config[:bucket]} ..."
 			logger.info "Uploading #{File.basename(aFile)} to S3 bucket #{config[:bucket]} ..."
-      s3shell "s3cmd put #{config[:bucket]}:#{File.basename(aFile)} #{aFile}"
+			s3client.upload_backup(aFile,config[:bucket],File.basename(aFile))
     end
 
     # downloads the given file from the current bucket as its basename
     def download(aFile)
-      s3shell "s3cmd get #{config[:bucket]}:#{File.basename(aFile)} #{aFile}"
+			s3client.download(aFile,config[:bucket],File.basename(aFile))
     end
 
     # calculate the date (with no time component) based on :day_begins_hour and the local time
@@ -611,6 +615,21 @@ module YoreCore
       temp_file = File.expand_path('file.tar',temp_path)
 			unpack(archive,temp_file)
 			uncompress(temp_file,folder)
+		end
+		
+		def new_backup_bucket(aArgs)
+			bucket_name = aArgs[0]
+			if s3client.bucket_exists?(bucket_name)
+				puts "sorry, bucket already exists"
+			else
+				backup_user_attrs = {
+					'id' => config[:backup_id],
+					'display_name' => config[:backup_name] || 'backup_name',
+					'email_address' => config[:backup_email]
+				}
+				raise StandardError.new("Must provide backup_id or backup_email") unless backup_user_attrs['id'] || backup_user_attrs['email_address']
+				s3client.new_backup_bucket(bucket_name,backup_user_attrs)
+			end	
 		end
 		
 		def test_email(*aDb)

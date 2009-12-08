@@ -1,6 +1,6 @@
 = yore
 
-* RubyForge Project : http://rubyforge.org/projects/buzzware
+* GitHub Project : http://github.com/buzzware/yore
 * Author : http://www.buzzware.com.au
 
 == DESCRIPTION:
@@ -28,16 +28,19 @@ can be manually configured.
 
 Amazon S3
 
-* Yore relies on s3cmd for S3 access which is contained in the s3sync gem.  
-s3cmd must be configured with keys for a registered Amazon S3 account.  
-Use something like "s3cmd listbuckets" to check that you have that setup 
-correctly before launching yore.  
+* You can and probably should create a seperate Amazon S3 account for backups. Unfortunately 
+you will need to supply your credit card details for this account, event though only your main
+account will be charged. 
 
-* You can and probably should create a seperate Amazon account for 1 or more web servers, 
-and then grant write access to a single bucket for their use, rather than using your main
-S3 keys. You don't need to supply your credit card details for this account - your main 
-account will be charged. This avoids your main Amazon AWS keys getting stolen by someone 
-hacking into the webserver, or even other legitimate users using them.
+Sadly you can't get a useable S3 account without giving them your credit card information,
+even if you never plan to create your own buckets. Build a bridge, get over it and sign 
+up at http://aws.amazon.com/s3/. Then when you have logged in to the AWS website, go to 
+"Your Account" -> "Security Credentials"
+to get an "Access Key ID" and click Show to get its "Secret Access Key"
+
+* Create a bucket with backup permissions for an AWS account
+
+yore new_backup_bucket --backup_email "blah@buzzware.com.au" testbucket
 
 == SYNOPSIS:
 
@@ -48,8 +51,8 @@ eg.
 
 == REQUIREMENTS:
 
-* s3sync (http://rubyforge.org/projects/s3sync/)
-* RequirePaths (http://rubyforge.org/projects/blackwhitelogin)
+* AWS S3 (http://github.com/marcel/aws-s3)
+* buzzcore (http://github.com/buzzware/buzzcore)
 * cmdparse (http://cmdparse.rubyforge.org)
 * shairontoledo-popen4 (http://github.com/shairontoledo/popen4)
 * tar, bzip2, openssl, mysql

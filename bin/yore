@@ -69,6 +69,15 @@ encrypt_decrypt_option_parser = CmdParse::OptionParserWrapper.new do |opt|
   #end
 end
 
+new_backup_bucket_option_parser = CmdParse::OptionParserWrapper.new do |opt|
+  opt.on( '--backup_id=S3 Access Key ID', String, 'S3 Access Key ID from Amazon' ) do |value|
+    CMD_OPTIONS[:backup_id] = value
+  end
+  opt.on( '--backup_email=AWS Account Email Address', String, 'AWS Account Email Address from Amazon' ) do |value|
+    CMD_OPTIONS[:backup_email] = value
+  end
+end
+
 command(cmd,yore,:backup,"Backup filelist to S3",option_parser)
 
 command(cmd,yore,:save,"Save application data to local file",load_save_option_parser)
@@ -82,6 +91,8 @@ command(cmd,yore,:decrypt,"Expand archive file",encrypt_decrypt_option_parser)
 command(cmd,yore,:test_email,"Test email sending\n")
 
 command(cmd,yore,:db_dump,"Dump database by name in job\n")
+
+command(cmd,yore,:new_backup_bucket,"Create a new bucket with permissions for backup\n",new_backup_bucket_option_parser)
 
 cmd.parse
 
