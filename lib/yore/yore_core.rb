@@ -1,5 +1,6 @@
 require 'rubygems'
 gem 'buzzcore'; require 'buzzcore';
+require 'buzzcore/extra/xml_utils2'
 
 require 'fileutils'
 require 'net/smtp'
@@ -232,7 +233,9 @@ module YoreCore
 				aConfig = File.expand_path(aConfig)
 				logger.info "Job file: #{aConfig}"
 				op = {:basepath => File.dirname(aConfig)}
-				xml = XmlUtils.get_file_root(aConfig)
+				xmlString = MiscUtils.string_from_file(aConfig)
+				xmlString = XmlUtils2.clean_data(xmlString)
+				xml = XmlUtils.get_xml_root(xmlString)
 				return configure(xml,aCmdOptions,op)
 			end
 
@@ -467,6 +470,7 @@ module YoreCore
       sourceFound = false
 
       if aSourcesXml
+				#aSourcesXml.elements['Source'].each do |xmlSource|
 				REXML::XPath.each(aSourcesXml,'Source') do |xmlSource|
 					case xmlSource.attributes['Type']
 						when 'File' then
@@ -537,6 +541,7 @@ module YoreCore
 		def save_internal(aFilename)
 			FileUtils.mkdir_p(files_path = File.join(temp_path,'files'))
 			filelist = collect_file_list(XmlUtils.single_node(config.xmlRoot,'/Yore/Sources'),files_path)
+			logger.info "files collected:\n  "+filelist.join("\n  ")
       compress(filelist,aFilename)
 		end
 
