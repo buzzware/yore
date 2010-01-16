@@ -4,8 +4,6 @@ require 'fileutils'
 
 require 'rubygems'
 
-require File.expand_path('../../buzzcore/lib/buzzcore_dev',File.dirname(__FILE__))
-
 gem 'buzzcore'; require 'buzzcore';
 gem 'cmdparse'; require 'cmdparse'
 

@@ -15,12 +15,6 @@ and can use Amazon S3 for storage.
 * Compressed, encrypted, single file backups of folders and mysql databases
 * Can be called regularly eg. by cron
 * Backups can be uploaded to Amazon S3
-* will later remove old files that don't match the configurable scheme for backup history,
-but keeping a useful history eg. 
-- backup every day
-- keep 2 weeks of daily backups
-- keep 12 weeks of friday backups
-- keep the first friday backup of each month forever
 * Can automatically collect and compress database all user data from particular applications
 to a single file, and restore to another server. Known applications are Rails-centric but others
 can be manually configured. 

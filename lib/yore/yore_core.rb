@@ -13,64 +13,6 @@ THIS_DIR = File.dirname(THIS_FILE)
 
 module YoreCore
 
-  class KeepDaily
-
-      attr_reader :keep_age
-
-      def initialize(aKeepAge=14)
-        @keep_age = aKeepAge
-      end
-
-      def is?
-        true
-      end
-
-      def age(aDate)
-
-      end
-      def keep?(aDate)
-
-      end
-  end
-
-  class KeepWeekly
-
-      attr_reader :keep_age
-
-      def initialize(aKeepAge=14)
-        @keep_age = aKeepAge
-      end
-
-      def is?
-
-      end
-      def age(aDate)
-
-      end
-      def keep?(aDate)
-
-      end
-  end
-
-  class KeepMonthly
-
-      attr_reader :keep_age
-
-      def initialize(aKeepAge=14)
-        @keep_age = aKeepAge
-      end
-
-      def is?
-
-      end
-      def age(aDate)
-
-      end
-      def keep?(aDate)
-
-      end
-  end
-
   class Yore
 
     DEFAULT_CONFIG = {
@@ -78,9 +20,6 @@ module YoreCore
 			:basepath => String,
 			:backup_id => String,
 			:backup_email => String,
-      :keep_daily => 14,
-      :keep_weekly => 12,
-      :keep_monthly => 12,
       :crypto_iv => "3A63775C1E3F291B0925578165EB917E",    # apparently a string of up to 32 random hex digits
       :crypto_key => "07692FC8656F04AE5518B80D38681E038A3C12050DF6CC97CEEC33D800D5E2FE",   # apparently a string of up to 64 random hex digits
       :first_hour => 4,
@@ -105,7 +44,6 @@ module YoreCore
     attr_reader :config
     attr_reader :logger
     attr_reader :reporter
-    attr_reader :keepers
     attr_reader :s3client
 
     def initialize(aConfig=nil)
@@ -133,7 +71,7 @@ module YoreCore
 		#aOptions may require {:basepath => File.dirname(File.expand_path(job))}
 		def self.launch(aConfigXml,aCmdOptions=nil,aOptions=nil)
 			if !aConfigXml
-				path = MiscUtils.path_combine(aOptions && aOptions[:basepath],'yore.config.xml')
+				path = MiscUtils.canonize_path('yore.config.xml',aOptions && aOptions[:basepath])
 				aConfigXml = path if File.exists?(path)				
 			end
 			result = Yore.new()
@@ -163,46 +101,33 @@ module YoreCore
 			return dbyml[aRailsEnv] && dbyml[aRailsEnv].symbolize_keys
 		end
 		
-		def self.find_upwards(aStartPath,aPath)
-			curr_path = File.expand_path(aStartPath)
-			while curr_path && !(test_path_exists = File.exists?(test_path = File.join(curr_path,aPath))) do
-				curr_path = MiscUtils.path_parent(curr_path)
-			end
-			curr_path && test_path_exists ? test_path : nil
-		end
-
 		def expand_app_option(kind=nil)
 			kind = config[:kind] unless kind && !kind.empty?
 			return nil unless kind && !kind.empty?
 			config.xmlRoot = create_empty_config_xml() if !config.xmlRoot
+			xmlSources = XmlUtils.single_node(config.xmlRoot,'/Yore/Sources') || XmlUtils.add_xml_from_string('<Sources/>',XmlUtils.single_node(config.xmlRoot,'/Yore'))
 			case kind
 				when 'spree'
 					# add file source
-					xmlSources = XmlUtils.single_node(config.xmlRoot,'/Yore/Sources')
-					if xmlSources
-						strSource = <<-EOS
-							<Source Type="File">
-								<IncludePath BasePath="public/assets">products</IncludePath>
-							</Source>
-						EOS
-						XmlUtils.add_xml_from_string(strSource,xmlSources)
-					end
+					strSource = <<-EOS
+						<Source Type="File">
+							<IncludePath BasePath="public/assets">products</IncludePath>
+						</Source>
+					EOS
+					XmlUtils.add_xml_from_string(strSource,xmlSources)
 					expand_app_option('rails')	# do again
 				# 
 				# if capistrano deployed, uploads are assumed to be in shared/uploads
 				#
 				when 'browsercms'
 					# add file source
-					xmlSources = XmlUtils.single_node(config.xmlRoot,'/Yore/Sources')
-					if xmlSources
-						uploadParent = File.join(config[:basepath],'tmp') unless config[:basepath]['/releases/'] && uploadParent = Yore.find_upwards(config[:basepath],'shared')
-						strSource = <<-EOS
-							<Source Type="File">
-								<IncludePath BasePath="#{uploadParent}">uploads</IncludePath>
-							</Source>
-						EOS
-						XmlUtils.add_xml_from_string(strSource,xmlSources)
-					end
+					uploadParent = MiscUtils.expand_magic_path('.../shared',config[:basepath]) || File.join(config[:basepath],'tmp')
+					strSource = <<-EOS
+						<Source Type="File">
+							<IncludePath BasePath="#{uploadParent}">uploads</IncludePath>
+						</Source>
+					EOS
+					XmlUtils.add_xml_from_string(strSource,xmlSources)
 					expand_app_option('rails')	# do again
 				when 'rails'
 					# * add db source from database.yml
@@ -210,18 +135,16 @@ module YoreCore
 					#if (dbyml = YAML::load(File.open(File.expand_path('config/database.yml',config[:basepath]))) rescue nil)
 					#	if env = (config[:RAILS_ENV] && config[:RAILS_ENV]!='' && config[:RAILS_ENV])
 					#		if (db_details = dbyml[env]) &&
-					xmlSources = XmlUtils.single_node(config.xmlRoot,'/Yore/Sources')
-					if xmlSources
-						#<Database Name="#{db_details[:database]}" Host="#{db_details[:host]}" User="#{db_details[:username]}" Password="#{db_details[:password]}">
-						strSource = <<-EOS
-							<Source Type="MySql" >
-								<Database Yml="config/database.yml">
-									<ArchiveFile>rails_app.sql</ArchiveFile>
-								</Database>
-							</Source>
-						EOS
-						XmlUtils.add_xml_from_string(strSource,xmlSources)
-					end
+
+					#<Database Name="#{db_details[:database]}" Host="#{db_details[:host]}" User="#{db_details[:username]}" Password="#{db_details[:password]}">
+					strSource = <<-EOS
+						<Source Type="MySql" >
+							<Database Yml="config/database.yml">
+								<ArchiveFile>rails_app.sql</ArchiveFile>
+							</Database>
+						</Source>
+					EOS
+					XmlUtils.add_xml_from_string(strSource,xmlSources)
 			end
 		end
 
@@ -230,7 +153,7 @@ module YoreCore
     def configure(aConfig,aCmdOptions = nil,aOptions = nil)
       config_to_read = {}
 			if aConfig.is_a?(String)
-				aConfig = File.expand_path(aConfig)
+				aConfig = MiscUtils.canonize_path(aConfig)
 				logger.info "Job file: #{aConfig}"
 				op = {:basepath => File.dirname(aConfig)}
 				xmlString = MiscUtils.string_from_file(aConfig)
@@ -257,15 +180,10 @@ module YoreCore
       aCmdOptions.each{|k,v| config_to_read[k.to_sym] = v} if aCmdOptions		# merge command options
       config_to_read.merge!(aOptions) if aOptions														# merge options
 			config.read(config_to_read)
-			config[:basepath] = File.expand_path(Dir.pwd) if !config[:basepath] || config[:basepath]==''
+			config[:basepath] = MiscUtils.canonize_path(config[:basepath],Dir.pwd)
 
 			expand_app_option()
 
-      @keepers = Array.new
-      @keepers << KeepDaily.new(config[:keep_daily])
-      @keepers << KeepWeekly.new(config[:keep_weekly])
-      @keepers << KeepMonthly.new(config[:keep_monthly])
-			
 			@s3client = ::AWSS3Client.new()
 			logger.info "Using S3 key #{@s3client.credentials[:s3_access_key_id]}"
     end
@@ -309,11 +227,6 @@ module YoreCore
       end
       filemap
     end
-
-    def keep_file?(aFile)
-
-    end
-
 
     # By default, GNU tar suppresses a leading slash on absolute pathnames while creating or reading a tar archive. (You can suppress this with the -p option.)
     # tar : http://my.safaribooksonline.com/0596102461/I_0596102461_CHP_3_SECT_9#snippet
