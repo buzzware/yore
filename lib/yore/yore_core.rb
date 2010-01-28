@@ -44,7 +44,6 @@ module YoreCore
     attr_reader :config
     attr_reader :logger
     attr_reader :reporter
-    attr_reader :s3client
 
     def initialize(aConfig=nil)
       DEFAULT_CONFIG[:email_report] = false  # fixes some bug where this was nil
@@ -67,6 +66,13 @@ module YoreCore
 
       configure(aConfig)
     end
+		
+		def s3client
+			return @s3client if @s3client		
+			@s3client = ::AWSS3Client.new()
+			logger.info "Using S3 key #{@s3client.credentials[:s3_access_key_id]}"
+			@s3client			
+		end
 		
 		#aOptions may require {:basepath => File.dirname(File.expand_path(job))}
 		def self.launch(aConfigXml,aCmdOptions=nil,aOptions=nil)
@@ -183,9 +189,6 @@ module YoreCore
 			config[:basepath] = MiscUtils.canonize_path(config[:basepath],Dir.pwd)
 
 			expand_app_option()
-
-			@s3client = ::AWSS3Client.new()
-			logger.info "Using S3 key #{@s3client.credentials[:s3_access_key_id]}"
     end
 		
 		def do_action(aAction,aArgs)
