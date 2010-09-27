@@ -6,6 +6,7 @@ require 'fileutils'
 require 'net/smtp'
 
 require 'yore/AWSS3Client'
+require 'yaml'
 
 
 THIS_FILE = File.expand_path(__FILE__)
@@ -25,6 +26,7 @@ module YoreCore
       :first_hour => 4,
       :prefix => 'backup',
       :log_level => 'INFO',
+			:leave_temp_files => false,
       :bucket => String,
 			:email_report => false,
       :mail_host => String,
@@ -255,9 +257,12 @@ module YoreCore
       tarfile = MiscUtils.file_change_ext(aDestFile, 'tar')
 			
 			shell("tar cv #{aParentDir ? '--directory='+aParentDir.to_s : ''} --file=#{tarfile} --files-from=#{listfile}")			
+			shell("rm #{listfile}") unless config[:leave_temp_files]
 			logger.info "Compressing ..."
 			tarfile_size = File.size(tarfile)
       shell("bzip2 #{tarfile}; mv #{tarfile}.bz2 #{aDestFile}")
+			shell("rm #{tarfile}") unless config[:leave_temp_files]
+			
 			logger.info "Compressed #{'%.1f' % (tarfile_size*1.0/2**10)} KB to #{'%.1f' % (File.size(aDestFile)*1.0/2**10)} KB"
     end
 
@@ -476,8 +481,9 @@ module YoreCore
 			save_internal(temp_file)
       backup_file = File.expand_path(encode_file_name(),temp_path)
       pack(temp_file,backup_file)
+			shell("rm #{temp_file}") unless config[:leave_temp_files]
       upload(backup_file)
-      #clean
+			shell("rm #{backup_file}") unless config[:leave_temp_files]
     end
 				
 		def load(aArgs,aCmdOptions=nil)

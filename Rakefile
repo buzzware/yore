@@ -12,7 +12,7 @@ begin
     gem.authors = ["buzzware"]
     gem.rubyforge_project = "buzzware"
     gem.add_dependency('cmdparse', '>= 2.0.2')
-    gem.add_dependency('buzzcore', '>= 0.3.1')
+    gem.add_dependency('buzzcore', '>= 0.3.3')
     gem.add_dependency('nokogiri', '>= 1.3.3')
     gem.add_dependency('aws-s3', '>= 0.6.2')
     gem.add_development_dependency "thoughtbot-shoulda"
