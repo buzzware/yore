@@ -82,6 +82,7 @@ class AWSS3Client
 		policy
 	end
 
+	# aContent can be a String or File eg. 'something' or open('file.txt')
 	def put_content(aFilename, aContent, aBucketName)
 		AWS::S3::S3Object.store(aFilename, aContent, aBucketName)
 	end
@@ -89,15 +90,16 @@ class AWSS3Client
 	def upload(aFilename,aBucketName,aObjectName=nil)
 		aObjectName ||= File.basename(aFileName)
 		#AWS::S3::S3Object.store(aObjectName, MiscUtils.string_from_file(aFileName), aBucketName)
-		content = MiscUtils.string_from_file(aFileName)
+		#content = MiscUtils.string_from_file(aFileName)
 
-		put_content(aObjectName, content, aBucketName)
+		put_content(aObjectName, open(aFilename), aBucketName)
 	end	
 	
 	def get_content(aFilename, aBucketName)	
 		return AWS::S3::S3Object.value(aFilename, aBucketName)
 	end
 
+	# should replace string_to_file with file object
 	def download(aFilename,aBucketName,aObjectName=nil)
 		aObjectName ||= File.basename(aFilename)
 		#AWS::S3::S3Object.store(aObjectName, MiscUtils.string_from_file(aFilename), aBucketName)
@@ -115,7 +117,7 @@ class AWSS3Client
 	# * This requires the bucket to give WRITE & READ_ACP permissions to this user
 	def upload_backup(aFileName,aBucketName,aObjectName = nil)
 		aObjectName ||= File.basename(aFileName)
-		AWS::S3::S3Object.store(aObjectName, MiscUtils.string_from_file(aFileName), aBucketName)
+		AWS::S3::S3Object.store(aObjectName, open(aFileName), aBucketName)
 		bucket_owner = AWS::S3::Bucket.acl(aBucketName).owner
 		policy = AWS::S3::S3Object.acl(aObjectName,aBucketName)
 		policy.grants.clear
