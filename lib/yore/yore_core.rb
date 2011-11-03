@@ -256,12 +256,11 @@ module YoreCore
       )
       tarfile = MiscUtils.file_change_ext(aDestFile, 'tar')
 			
-			shell("tar cv #{aParentDir ? '--directory='+aParentDir.to_s : ''} --file=#{tarfile} --files-from=#{listfile}")			
+			shell("tar cv #{aParentDir ? '--directory='+aParentDir.to_s : ''} --file=#{tarfile} --files-from=#{listfile}")
 			shell("rm #{listfile}") unless config[:leave_temp_files]
 			logger.info "Compressing ..."
 			tarfile_size = File.size(tarfile)
-      shell("bzip2 #{tarfile}; mv #{tarfile}.bz2 #{aDestFile}")
-			shell("rm #{tarfile}") unless config[:leave_temp_files]
+			shell("bzip2 #{tarfile}; mv #{tarfile}.bz2 #{aDestFile}")
 			
 			logger.info "Compressed #{'%.1f' % (tarfile_size*1.0/2**10)} KB to #{'%.1f' % (File.size(aDestFile)*1.0/2**10)} KB"
     end
