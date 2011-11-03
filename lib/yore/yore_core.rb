@@ -21,6 +21,7 @@ module YoreCore
 			:basepath => String,
 			:backup_id => String,
 			:backup_email => String,
+			:compress => true,
       :crypto_iv => "3A63775C1E3F291B0925578165EB917E",    # apparently a string of up to 32 random hex digits
       :crypto_key => "07692FC8656F04AE5518B80D38681E038A3C12050DF6CC97CEEC33D800D5E2FE",   # apparently a string of up to 64 random hex digits
       :first_hour => 4,
@@ -258,11 +259,15 @@ module YoreCore
 			
 			shell("tar cv #{aParentDir ? '--directory='+aParentDir.to_s : ''} --file=#{tarfile} --files-from=#{listfile}")
 			shell("rm #{listfile}") unless config[:leave_temp_files]
-			logger.info "Compressing ..."
-			tarfile_size = File.size(tarfile)
-			shell("bzip2 #{tarfile}; mv #{tarfile}.bz2 #{aDestFile}")
-			
-			logger.info "Compressed #{'%.1f' % (tarfile_size*1.0/2**10)} KB to #{'%.1f' % (File.size(aDestFile)*1.0/2**10)} KB"
+			if config[:compress]
+				logger.info "Compressing ..."
+				tarfile_size = File.size(tarfile)
+				shell("bzip2 #{tarfile}; mv #{tarfile}.bz2 #{aDestFile}")
+				
+				logger.info "Compressed #{'%.1f' % (tarfile_size*1.0/2**10)} KB to #{'%.1f' % (File.size(aDestFile)*1.0/2**10)} KB"
+			else
+				shell("mv #{tarfile} #{aDestFile}")
+			end
     end
 
     def uncompress(aArchive,aDestination=nil,aArchiveContent=nil)			
