@@ -6,6 +6,7 @@ require 'fileutils'
 require 'net/smtp'
 
 require 'yore/AWSS3Client'
+require 'yore/BufferedLogger'
 require 'yaml'
 
 
@@ -55,9 +56,10 @@ module YoreCore
 			cons.level = Logger::Severity.const_get(config[:log_level]) rescue Logger::Severity::INFO
 
       report_file = MiscUtils::temp_file
-			@reporter = Logger.new(report_file)
+			@reporter = BufferedLogger.new(report_file)
 			@reporter.formatter = ConsoleLogger::ReportFormatter.new
 			@reporter.level = cons.level
+			@reporter.auto_flushing = 1
 
 			@logger = MultiLogger.new([cons,@reporter])
 			@logger.info "Yore file and database backup tool for Amazon S3 "
