@@ -57,7 +57,7 @@ module YoreCore
 
       report_file = MiscUtils::temp_file
 			@reporter = BufferedLogger.new(report_file)
-			@reporter.formatter = ConsoleLogger::ReportFormatter.new
+			#@reporter.formatter = ConsoleLogger::ReportFormatter.new
 			@reporter.level = cons.level
 			@reporter.auto_flushing = 1
 
