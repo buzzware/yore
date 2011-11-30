@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{yore}
-  s.version = "0.3.0"
+  s.version = "0.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["buzzware"]
-  s.date = %q{2011-11-07}
+  s.date = %q{2011-11-30}
   s.default_executable = %q{yore}
   s.description = %q{yore (as in "days of yore") is a user data management utility for web applications.}
   s.email = %q{contact@buzzware.com.au}
@@ -27,6 +27,7 @@ Gem::Specification.new do |s|
      "VERSION",
      "bin/yore",
      "lib/yore/AWSS3Client.rb",
+     "lib/yore/BufferedLogger.rb",
      "lib/yore/yore_core.rb",
      "notes.txt",
      "test.crontab",
